@@ -1,0 +1,6 @@
+employee_id,name,department,manager,role,location,employment_type,date_of_joining,tickets_open,tickets_closed,current_workload_score,performance_rating,avg_resolution_time_days,skills,risk,retention_recommendation,last_updated
+E1001,Ananya Rao,Engineering,MUTHU THANGAVEL,Senior Backend Engineer,Bangalore,Full-time,2021-03-15,3,12,0.68,4.4,3.2,Python;Go;Kubernetes,Low,Retain,2026-02-01
+E1002,Rahul Mehta,Product,Subarna Roy,Product Manager,Remote,Full-time,2019-11-20,5,22,0.82,4.1,4.8,Discovery;Roadmapping;Analytics,Medium,Retain,2026-02-10
+E1003,Neha Gupta,IT,MUTHU THANGAVEL,IT Support Specialist,Bangalore,Contract,2024-07-01,8,40,0.91,3.7,2.3,SCCM;AD;Intune,High,Review,2026-02-18
+E1004,Arjun Singh,HR,Subarna Roy,HR Operations Associate,Bangalore,Full-time,2022-09-05,2,15,0.54,4.6,1.7,Payroll;Onboarding;Compliance,Low,Retain,2026-02-22
+E1005,Priya Sharma,Engineering,MUTHU THANGAVEL,Frontend Engineer,Bangalore,Full-time,2020-01-10,4,18,0.73,4.2,3.9,React;TypeScript;UX,Medium,Retain,2026-02-12

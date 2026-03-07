@@ -1,0 +1,6 @@
+email,password,employee_id,name,department,manager,role
+employee1@example.com,pass123,E1001,Ananya Rao,Engineering,MUTHU THANGAVEL,Data Scientist
+employee2@example.com,pass123,E1005,Priya Sharma,Engineering,MUTHU THANGAVEL,Data Analyst
+hradmin@ibm.com,pass123,HR001,Arjun Singh,HR,Subarna Roy,hr
+employee3@example.com,pass123,E1002,Tanup vats,Engineering,MUTHU THANGAVEL,Software Engineer
+npriyankakr000@gmail.com,pass123,E1003,neha priya,Engineering,Subarna Roy,Data Scientist
