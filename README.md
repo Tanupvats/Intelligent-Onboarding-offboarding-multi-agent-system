@@ -53,13 +53,13 @@
 
 ### ▶ Video 1: End‑to‑End Onboarding Process
 
-[![Watch Video 1](onboarding_Platform.jpg)](https://ibm-my.sharepoint.com/:v:/p/master_tanup_vats/IQD_Z70-iABNSLD1VmGS-eUqAbXShejQyeTLBA5dlvJlnzE)
+[![Watch Video 1](onboarding_Platform.jpg)]([https://ibm-my.sharepoint.com/:v:/p/master_tanup_vats/IQD_Z70-iABNSLD1VmGS-eUqAbXShejQyeTLBA5dlvJlnzE](https://drive.google.com/file/d/1OZAnNpU-O9d2DnWT17erlOOSs2TT9dQF/view?usp=sharing))
 
 ---
 
 ### ▶ Video 2: End to End Offboarding Process
 
-[![Watch Video 2](offboarding_platform.jpg)](https://ibm-my.sharepoint.com/:v:/p/master_tanup_vats/IQD8suR3uWO4RZd4IHWsNxzNAQmrLNlmHXO3db9CF8sv22w?e=juZ0qD)
+[![Watch Video 2](offboarding_platform.jpg)]([https://ibm-my.sharepoint.com/:v:/p/master_tanup_vats/IQD8suR3uWO4RZd4IHWsNxzNAQmrLNlmHXO3db9CF8sv22w?e=juZ0qD](https://drive.google.com/file/d/1rwXpsi-5ph4d-jC5F3jbbgYdFoRaCSkr/view?usp=sharing))
 
 
 ## Scope & Capabilities
