@@ -53,13 +53,13 @@
 
 ### ▶ Video 1: End‑to‑End Onboarding Process
 
-[![Watch Video 1](onboarding_Platform.jpg)](https://drive.google.com/file/d/1OZAnNpU-O9d2DnWT17erlOOSs2TT9dQF/view?usp=sharing)
+[![Watch Video 1](onboarding_demo.gif)](https://drive.google.com/file/d/1OZAnNpU-O9d2DnWT17erlOOSs2TT9dQF/view?usp=sharing)
 
 ---
 
 ### ▶ Video 2: End to End Offboarding Process
 
-[![Watch Video 2](offboarding_platform.jpg)](https://drive.google.com/file/d/1rwXpsi-5ph4d-jC5F3jbbgYdFoRaCSkr/view?usp=sharing)
+[![Watch Video 2](Offboarding_demo.gif)](https://drive.google.com/file/d/1rwXpsi-5ph4d-jC5F3jbbgYdFoRaCSkr/view?usp=sharing)
 
 
 ## Scope & Capabilities
