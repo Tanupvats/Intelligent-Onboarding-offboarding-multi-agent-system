@@ -3,6 +3,7 @@
 **Python · LangGraph · FastAPI · Azure/OpenAI/Llama · LangSmith · Streamlit**
 
 An intelligent, agent-driven Onboarding/offboarding platform built with **LangGraph**, **FastAPI**, and **Streamlit**. This system utilizes a Hub-and-Spoke Micro-Orchestration architecture to automate candidate onboarding and employee offboarding, seamlessly blending autonomous LLM reasoning with mandatory Human-In-The-Loop (HITL) checkpoints and sandboxed Model Context Protocol (MCP) side-effects.
+
 ---
 
 ## Key Features & Engineering Patterns
