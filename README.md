@@ -165,4 +165,3 @@ streamlit run frontend/app_hr.py --server.port 8503
 ##  Author
 
 **Tanup Vats**  
-Senior Data Scientist
