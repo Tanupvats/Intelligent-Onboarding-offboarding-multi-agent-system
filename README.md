@@ -16,8 +16,6 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ---
 
-
----
 ## Scalable high level system design for Agentic Onboarding/Offboarding
 
 ###  HLSD : End‑to‑End Agentic Onboarding/Offboarding Flow
