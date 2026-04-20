@@ -1,159 +1,274 @@
+"""
+Employee Offboarding Portal — improved.
+
+Parallel improvements to app_onboarding.py:
+- Shared api client with auth / timeout / retry / 401 handling
+- Unified themed badges + next-action banner
+- Real loading/error states, toasts on success
+- Chat: trimmed history, clear-chat button
+- No hardcoded API URL
+"""
+
+from __future__ import annotations
+
+from datetime import date, timedelta
 
 import streamlit as st
-import requests
+
 from _auth import check_auth, logout
-
-API_URL = "http://localhost:8000"
-
-st.set_page_config(page_title="Employee Offboarding", layout="wide")
-check_auth()
-
-headers = {"Authorization": f"Bearer {st.session_state['token']}"}
-profile = st.session_state['profile']
-
-
-if "active_step_off" not in st.session_state:
-    st.session_state["active_step_off"] = None
-if "chat_history_off" not in st.session_state:
-    st.session_state["chat_history_off"] = [{"role": "assistant", "content": f"Hi {profile.get('name')}. I'm here to assist you with the offboarding process. What questions do you have?"}]
+from api import APIError, get_json, post_json, safe_call
+from ui import (
+    OFFBOARDING_STEPS,
+    inject_theme,
+    next_action_banner,
+    progress_badge,
+    trim_chat_history,
+)
 
 
-progress = {}
+st.set_page_config(page_title="Employee Offboarding", layout="wide", page_icon="👋")
+inject_theme()
+check_auth(login_title="Employee Offboarding")
+profile = st.session_state["profile"]
+
+
+# --- Session-state defaults -----------------------------------------------
+st.session_state.setdefault("active_step_off", None)
+st.session_state.setdefault(
+    "chat_history_off",
+    [
+        {
+            "role": "assistant",
+            "content": (
+                f"Hi {profile.get('name', 'there')}. I'm here to help you through "
+                "the offboarding process. What can I help with?"
+            ),
+        }
+    ],
+)
+
+
+# --- Progress fetch --------------------------------------------------------
+@st.cache_data(ttl=5, show_spinner=False)
+def _fetch_progress(token: str):
+    return get_json("/progress/offboarding")
+
+
 try:
-    progress = requests.get(f"{API_URL}/progress/offboarding", headers=headers).json()
-except Exception as e:
-    st.error(f"Failed to connect to backend: {e}")
+    progress = _fetch_progress(st.session_state["token"]) or {}
+except APIError as e:
+    st.error(f"Couldn't load your offboarding status: {e.message}")
+    if st.button("Retry"):
+        st.cache_data.clear()
+        st.rerun()
     st.stop()
 
 
-st.sidebar.title(f"{profile.get('name')}")
-st.sidebar.write(f"**Role:** {profile.get('role')} | **Dept:** {profile.get('department')}")
-col_lo, col_ref = st.sidebar.columns(2)
-with col_lo:
-    if st.button("Logout", use_container_width=True): logout()
-with col_ref:
-    if st.button("🔄 Refresh", use_container_width=True):
-        st.session_state["active_step_off"] = None
+# --- Sidebar ---------------------------------------------------------------
+with st.sidebar:
+    st.markdown(f"### 👋 {profile.get('name', 'User')}")
+    st.caption(
+        f"**Role:** {profile.get('role', '—')}  \n"
+        f"**Dept:** {profile.get('department', '—')}"
+    )
+
+    col_lo, col_ref = st.columns(2)
+    with col_lo:
+        if st.button("Logout", use_container_width=True):
+            logout()
+    with col_ref:
+        if st.button("🔄 Refresh", use_container_width=True):
+            st.cache_data.clear()
+            st.session_state["active_step_off"] = None
+            st.rerun()
+
+    st.divider()
+    st.subheader("💬 HR Support")
+
+    if st.button("🧹 Clear chat", use_container_width=True):
+        st.session_state["chat_history_off"] = [
+            {
+                "role": "assistant",
+                "content": f"Hi again {profile.get('name', 'there')}! What can I help with?",
+            }
+        ]
         st.rerun()
 
-st.sidebar.divider()
-st.sidebar.subheader("💬 HR Support Chat")
+    chat_container = st.container(height=400)
+    for msg in st.session_state["chat_history_off"]:
+        chat_container.chat_message(msg["role"]).write(msg["content"])
 
-chat_container = st.sidebar.container(height=450)
-for msg in st.session_state["chat_history_off"]:
-    chat_container.chat_message(msg["role"]).write(msg["content"])
-
-if prompt := st.sidebar.chat_input("Ask a question about offboarding..."):
-    st.session_state["chat_history_off"].append({"role": "user", "content": prompt})
-    chat_container.chat_message("user").write(prompt)
-    
-    current_step = "General Offboarding"
-    if progress.get('step1') in ["unlocked", "rejected"]: current_step = "Step 1: Initiation"
-    elif progress.get('step2') in ["pending_hr", "unlocked", "rejected"]: current_step = "Step 2: HR Approval"
-    elif progress.get('step3') in ["unlocked", "rejected"]: current_step = "Step 3: Exit Formalities"
-    elif progress.get('step3') == "completed": current_step = "Offboarding Completed"
-
-    with chat_container.chat_message("assistant"):
-        with st.spinner("Typing..."):
-            chat_payload = {
-                "message": prompt,
-                "flow": "offboarding",
-                "current_step": current_step,
-                "history": st.session_state["chat_history_off"][:-1]
-            }
-            try:
-                resp = requests.post(f"{API_URL}/chat", json=chat_payload, headers=headers)
-                if resp.status_code == 200:
-                    reply = resp.json().get("reply", "Error generating response.")
-                    st.write(reply)
-                    st.session_state["chat_history_off"].append({"role": "assistant", "content": reply})
-                else:
-                    st.error("Chat service unavailable.")
-            except Exception:
-                st.error("Failed to connect to AI Support.")
+    prompt = st.chat_input("Ask about offboarding...")
 
 
+# --- Main ------------------------------------------------------------------
 st.title("Offboarding Portal")
 
-def render_badge(status):
-    badges = {"completed": "✅ **Completed**", "pending_hr": "⏳ **Pending HR Approval**", "unlocked": "🔓 **Action Required**", "rejected": "❌ **Action Required**"}
-    return badges.get(status, "🔒 **Locked**")
+current_step_label = next_action_banner(progress, "offboarding") or "General Offboarding"
 
-col1, col2, col3 = st.columns(3)
+cols = st.columns(3, gap="medium")
+for (key, _, label), col in zip(OFFBOARDING_STEPS, cols):
+    status = (progress.get(key) or "locked").lower()
+    with col:
+        with st.container(border=True):
+            st.markdown(f"#### {label}")
+            st.markdown(progress_badge(status), unsafe_allow_html=True)
 
-with col1:
-    with st.container(border=True):
-        st.subheader("Step 1: Initiation")
-        st.markdown(render_badge(progress.get('step1', 'locked')))
-        if progress.get('step1') in ["unlocked", "rejected"]:
-            if st.button("Start Offboarding", key="btn_off1", use_container_width=True):
-                st.session_state["active_step_off"] = 1
-                st.rerun()
+            if status == "rejected":
+                ticket = (progress.get("tickets") or {}).get(key) or {}
+                if ticket.get("comments") or ticket.get("description"):
+                    st.caption(
+                        f"**HR note:** {ticket.get('comments') or ticket.get('description')}"
+                    )
 
-with col2:
-    with st.container(border=True):
-        st.subheader("Step 2: HR Approval")
-        st.markdown(render_badge(progress.get('step2', 'locked')))
-        if progress.get('step2') in ["unlocked", "rejected"]:
-            if st.button("Acknowledge", key="btn_off2", use_container_width=True):
-                st.session_state["active_step_off"] = 2
-                st.rerun()
-
-with col3:
-    with st.container(border=True):
-        st.subheader("Step 3: Formalities")
-        st.markdown(render_badge(progress.get('step3', 'locked')))
-        if progress.get('step3') in ["unlocked", "rejected"]:
-            if st.button("Finalize Exit", key="btn_off3", use_container_width=True):
-                st.session_state["active_step_off"] = 3
+            btn_label = {
+                "step1": "Start Offboarding",
+                "step2": "Acknowledge",
+                "step3": "Finalize Exit",
+            }[key]
+            step_idx = {"step1": 1, "step2": 2, "step3": 3}[key]
+            disabled = status not in ("unlocked", "rejected")
+            if st.button(
+                btn_label,
+                key=f"btn_off_{key}",
+                use_container_width=True,
+                disabled=disabled,
+                type="primary" if status in ("unlocked", "rejected") else "secondary",
+            ):
+                st.session_state["active_step_off"] = step_idx
                 st.rerun()
 
 st.divider()
 
 
-if st.session_state["active_step_off"] is None and progress.get('step3') == "completed":
-    st.success("Your offboarding process is complete. Please ensure all physical assets are returned to IT.")
+def _close_active_step():
+    st.session_state["active_step_off"] = None
+    st.cache_data.clear()
+    st.rerun()
 
-elif st.session_state["active_step_off"] == 1:
-    st.header("Step 1: Initiate Separation")
-    st.warning("Submitting this form will officially notify your manager and the HR department.")
-    reason = st.text_area("Reason for leaving", placeholder="e.g., Better opportunity, Relocation, Personal reasons...")
+
+active = st.session_state["active_step_off"]
+
+if active is None:
+    if (progress.get("step3") or "").lower() == "completed":
+        st.success(
+            "Your offboarding process is complete. "
+            "Please ensure all physical assets are returned to IT."
+        )
+    else:
+        st.info("Select a step above to continue.")
+
+elif active == 1:
+    st.header("Step 1 · Initiate Separation")
+    st.warning(
+        "Submitting this form will officially notify your manager and the HR department."
+    )
+    reason = st.text_area(
+        "Reason for leaving",
+        placeholder="e.g., Better opportunity, Relocation, Personal reasons...",
+        height=120,
+    )
     early_release = st.checkbox("I am requesting an early release (waive notice period)")
+
     col_sub, col_cancel = st.columns([1, 5])
     with col_sub:
-        if st.button("Submit Resignation", type="primary"):
-            if reason.strip():
-                with st.spinner("Initiating offboarding sequence..."):
-                    resp = requests.post(f"{API_URL}/offboarding/initiate", json={"reason": reason, "early_release": early_release}, headers=headers)
-                    if resp.status_code == 200: st.session_state["active_step_off"] = None; st.rerun()
-                    else: st.error(f"Error {resp.status_code}: {resp.text}")
-            else: st.error("Please provide a reason for your departure.")
+        if st.button("Submit Resignation", type="primary", use_container_width=True):
+            if not reason.strip():
+                st.error("Please provide a reason for your departure.")
+            else:
+                ok, _ = safe_call(
+                    post_json,
+                    "/offboarding/initiate",
+                    json={"reason": reason, "early_release": early_release},
+                    spinner="Initiating offboarding sequence...",
+                    error_prefix="Couldn't initiate offboarding",
+                )
+                if ok:
+                    st.toast("Resignation submitted ✔", icon="📩")
+                    _close_active_step()
     with col_cancel:
-        if st.button("Cancel"): st.session_state["active_step_off"] = None; st.rerun()
+        if st.button("Cancel"):
+            _close_active_step()
 
-elif st.session_state["active_step_off"] == 2:
-    st.header("Step 2: Pending HR & Manager Approval")
+elif active == 2:
+    st.header("Step 2 · Pending HR & Manager Approval")
     st.info("Your separation request requires manual approval from HR.")
-    col_sub, col_cancel = st.columns([1, 5])
-    with col_sub:
-        if st.button("Acknowledge Wait", type="primary"):
-            with st.spinner("Updating status..."):
-                resp = requests.post(f"{API_URL}/offboarding/approval", headers=headers)
-                if resp.status_code == 200: st.session_state["active_step_off"] = None; st.rerun()
-                else: st.error(f"Error: {resp.text}")
-    with col_cancel:
-        if st.button("Cancel"): st.session_state["active_step_off"] = None; st.rerun()
+    st.caption(
+        "Clicking acknowledge simply confirms that you understand the process is "
+        "with HR — no further action is needed from you right now."
+    )
 
-elif st.session_state["active_step_off"] == 3:
-    st.header("Step 3: Exit Formalities")
-    st.write("Please confirm your final working day to generate your clearance checklist.")
-    last_day = st.date_input("Select your confirmed Last Working Day")
     col_sub, col_cancel = st.columns([1, 5])
     with col_sub:
-        if st.button("Finalize Exit Plan", type="primary"):
-            with st.spinner("Generating clearance tickets..."):
-                resp = requests.post(f"{API_URL}/offboarding/exit", json={"last_day": last_day.strftime("%Y-%m-%d")}, headers=headers)
-                if resp.status_code == 200: st.session_state["active_step_off"] = None; st.rerun()
-                else: st.error(f"Error: {resp.text}")
+        if st.button("Acknowledge Wait", type="primary", use_container_width=True):
+            ok, _ = safe_call(
+                post_json,
+                "/offboarding/approval",
+                json=None,
+                spinner="Updating status...",
+                error_prefix="Couldn't acknowledge",
+            )
+            if ok:
+                st.toast("Acknowledged ✔", icon="✅")
+                _close_active_step()
     with col_cancel:
-        if st.button("Cancel"): st.session_state["active_step_off"] = None; st.rerun()
+        if st.button("Cancel"):
+            _close_active_step()
+
+elif active == 3:
+    st.header("Step 3 · Exit Formalities")
+    st.write("Please confirm your final working day to generate your clearance checklist.")
+
+    today = date.today()
+    last_day = st.date_input(
+        "Confirmed Last Working Day",
+        value=today + timedelta(days=30),
+        min_value=today,
+    )
+
+    col_sub, col_cancel = st.columns([1, 5])
+    with col_sub:
+        if st.button("Finalize Exit Plan", type="primary", use_container_width=True):
+            ok, _ = safe_call(
+                post_json,
+                "/offboarding/exit",
+                json={"last_day": last_day.strftime("%Y-%m-%d")},
+                spinner="Generating clearance tickets...",
+                error_prefix="Couldn't finalize exit plan",
+            )
+            if ok:
+                st.toast("Exit plan generated ✔", icon="📋")
+                _close_active_step()
+    with col_cancel:
+        if st.button("Cancel"):
+            _close_active_step()
+
+
+# --- Chat handler ---------------------------------------------------------
+if prompt:
+    st.session_state["chat_history_off"].append({"role": "user", "content": prompt})
+    trimmed = trim_chat_history(st.session_state["chat_history_off"], max_turns=10)
+
+    with chat_container.chat_message("user"):
+        st.write(prompt)
+    with chat_container.chat_message("assistant"):
+        with st.spinner("Thinking..."):
+            try:
+                resp = post_json(
+                    "/chat",
+                    json={
+                        "message": prompt,
+                        "flow": "offboarding",
+                        "current_step": current_step_label,
+                        "history": trimmed[:-1],
+                    },
+                )
+                reply = (resp or {}).get("reply") or "Sorry, I couldn't generate a response."
+            except APIError as e:
+                reply = f"⚠️ Chat service error: {e.message}"
+
+            st.write(reply)
+            st.session_state["chat_history_off"].append(
+                {"role": "assistant", "content": reply}
+            )
+    st.rerun()
