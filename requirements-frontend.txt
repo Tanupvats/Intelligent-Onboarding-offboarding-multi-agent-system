@@ -1,0 +1,6 @@
+#
+# Install:   pip install -r requirements-frontend.txt
+
+streamlit==1.33.0
+pandas==2.2.1
+requests==2.32.5

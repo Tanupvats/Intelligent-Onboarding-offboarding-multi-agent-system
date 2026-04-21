@@ -6,6 +6,20 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ---
 
+## Demo Videos
+
+### ▶ Video 1: End‑to‑End Onboarding Process
+
+[![Watch Video 1](src\\onboarding_demo.gif)](https://drive.google.com/file/d/1OZAnNpU-O9d2DnWT17erlOOSs2TT9dQF/view?usp=sharing)
+
+---
+
+### ▶ Video 2: End to End Offboarding Process
+
+[![Watch Video 2](src\\Offboarding_demo.gif)](https://drive.google.com/file/d/1rwXpsi-5ph4d-jC5F3jbbgYdFoRaCSkr/view?usp=sharing)
+
+---
+
 ## Key Features & Engineering Patterns
 
 * **State-Driven Orchestration (LangGraph):** Manages asynchronous workflow steps (Offer → Documents → Assets) natively, pushing tasks to `END` states to safely await human inputs without race conditions.
@@ -18,7 +32,7 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ###  HLSD : End‑to‑End Agentic Onboarding/Offboarding Flow
 
-[![System Design](HLSD_Agentic_onboarding_ofboarding_platform.png)]()
+[![System Design](src\\HLSD_Agentic_onboarding_ofboarding_platform.png)]()
 
 ---
 
@@ -26,7 +40,7 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ### Node flow of agents and Tool usages
 
-[![Flow Diagram](Agent_flow_for_onboarding_offboarding.png)]()
+[![Flow Diagram](src\\Agent_flow_for_onboarding_offboarding.png)]()
 
 ---
 
@@ -34,7 +48,7 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ### Agentic email notification
 
-[![Email Notification](gmail_integration.jpg)]()
+[![Email Notification](src\\gmail_integration.jpg)]()
 
 ---
 
@@ -42,21 +56,7 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ### HR control Center for HITL (Human In The Loop)
 
-[![HR Platform](HR_platform.jpg)]()
-
----
-
-## Demo Videos
-
-### ▶ Video 1: End‑to‑End Onboarding Process
-
-[![Watch Video 1](onboarding_demo.gif)](https://drive.google.com/file/d/1OZAnNpU-O9d2DnWT17erlOOSs2TT9dQF/view?usp=sharing)
-
----
-
-### ▶ Video 2: End to End Offboarding Process
-
-[![Watch Video 2](Offboarding_demo.gif)](https://drive.google.com/file/d/1rwXpsi-5ph4d-jC5F3jbbgYdFoRaCSkr/view?usp=sharing)
+[![HR Platform](src\\HR_platform.jpg)]()
 
 
 ## Scope & Capabilities
@@ -76,7 +76,7 @@ This platform is designed to handle the end-to-end employee lifecycle, replacing
 * **Automated Event Triggers:** Uses FastAPI background tasks to listen for state changes and dispatch dynamic, LLM-drafted email notifications via secure MCP subprocesses.
 * **Extensible Integrations:** The modular Hub-and-Spoke design makes it trivial to connect external third-party APIs (e.g., DocuSign, Okta/SSO, Jira) as the system scales.
 
-##  Project Structure
+##  Project Structure(old)
 
 ```
 customer-support-agent/

@@ -1,0 +1,18 @@
+
+#
+# Install:   pip install -r requirements.txt -r requirements-frontend.txt -r requirements-dev.txt
+
+-r requirements.txt
+-r requirements-frontend.txt
+
+# Test
+pytest>=8.0
+pytest-asyncio>=0.23
+httpx>=0.28                    # FastAPI TestClient transport
+
+# Lint / format
+ruff>=0.6
+black>=24.0
+
+# Type check (optional)
+mypy>=1.10

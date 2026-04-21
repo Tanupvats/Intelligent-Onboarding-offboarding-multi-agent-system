@@ -1,0 +1,75 @@
+
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hr-mas-backend:latest
+    env_file: .env
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+
+  onboarding:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: hr-mas-frontend:latest
+    env_file: .env
+    environment:
+      STREAMLIT_APP: frontends/app_onboarding.py
+      STREAMLIT_SERVER_PORT: 8501
+      HR_API_URL: http://backend:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  offboarding:
+    image: hr-mas-frontend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    env_file: .env
+    environment:
+      STREAMLIT_APP: frontends/app_offboarding.py
+      STREAMLIT_SERVER_PORT: 8502
+      HR_API_URL: http://backend:8000
+    ports:
+      - "8502:8502"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  hr:
+    image: hr-mas-frontend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    env_file: .env
+    environment:
+      STREAMLIT_APP: frontends/app_hr.py
+      STREAMLIT_SERVER_PORT: 8503
+      HR_API_URL: http://backend:8000
+    ports:
+      - "8503:8503"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped

@@ -1,0 +1,38 @@
+# --- Secrets ----------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# --- Python -----------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# --- Virtual envs -----------------------------------------------------
+.venv/
+venv/
+env/
+
+# --- Local storage (user uploads, live tickets, RAG caches) ----------
+uploads/
+data/tickets_mirror.jsonl
+data/*.jsonl
+!data/employees.csv
+!data/users.csv
+!data/ticket.csv
+
+# --- IDE / OS ---------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Docker -----------------------------------------------------------
+.dockerignore.bak
