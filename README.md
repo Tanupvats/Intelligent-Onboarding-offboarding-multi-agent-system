@@ -16,7 +16,7 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ### ▶ Video 2: End to End Offboarding Process
 
-[![Watch Video 2](src\Offboarding_demo.gif)](https://drive.google.com/file/d/1rwXpsi-5ph4d-jC5F3jbbgYdFoRaCSkr/view?usp=sharing)
+[![Watch Video 2](src/Offboarding_demo.gif)](https://drive.google.com/file/d/1rwXpsi-5ph4d-jC5F3jbbgYdFoRaCSkr/view?usp=sharing)
 
 ---
 
@@ -32,7 +32,7 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ###  HLSD : End‑to‑End Agentic Onboarding/Offboarding Flow
 
-[![System Design](src\HLSD_Agentic_onboarding_ofboarding_platform.png)]()
+[![System Design](src/HLSD_Agentic_onboarding_ofboarding_platform.png)]()
 
 ---
 
@@ -40,7 +40,7 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ### Node flow of agents and Tool usages
 
-[![Flow Diagram](src\Agent_flow_for_onboarding_offboarding.png)]()
+[![Flow Diagram](src/Agent_flow_for_onboarding_offboarding.png)]()
 
 ---
 
@@ -48,7 +48,7 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ### Agentic email notification
 
-[![Email Notification](src\gmail_integration.jpg)]()
+[![Email Notification](src/gmail_integration.jpg)]()
 
 ---
 
@@ -56,7 +56,7 @@ An intelligent, agent-driven Onboarding/offboarding platform built with **LangGr
 
 ### HR control Center for HITL (Human In The Loop)
 
-[![HR Platform](src\HR_platform.jpg)]()
+[![HR Platform](src/HR_platform.jpg)]()
 
 
 ## Scope & Capabilities
